@@ -6,6 +6,9 @@ frappe.ui.form.on('Control de Produccion', {
 		frm.trigger("add_fetchs");
 		frm.trigger("set_queries");
 	},
+	"refresh": (frm) => {
+		frm.trigger("show_hide_production_supervisor_fields");
+	},
 	"onload_post_render": (frm) => {
 		frm.trigger("set_reqd_for_fields_related_to_workstation_state");
 	},
@@ -61,6 +64,9 @@ frappe.ui.form.on('Control de Produccion', {
 	"hide_fields_related_to_workstation_state": (frm) => {
 		let field_list = ["is_qty_reqd", "is_project_reqd", "operation_name"];
 		$.map(field_list, (field) => frm.set_value(field, undefined));
+	},
+	"show_hide_production_supervisor_fields": (frm) => {
+		frm.toggle_enable("time_stamp", frappe.user.has_role("Production Supervisor"));
 	},
 	"clear_fields_related_to_workstation_state": (frm) => {
 		let field_list = ["qty", "project", "project_name", "workstation_state"];

@@ -236,7 +236,8 @@ def get_query_production_order_station(doctype, txt, searchfield, start, page_le
 		stations = stations[0]
 		station_names = station_names[0]
 
-	return remove_duplicates([[stations[index], station_names[index]] for index in range(0, len(stations)) if stations[index]])
+	return remove_duplicates([[stations[index], station_names[index]] for index in range(0, len(stations)) 
+		if stations[index] and (txt in stations[index] or txt in station_names[index] if txt else True)])
 
 def remove_duplicates(array):
 	new_array = []
