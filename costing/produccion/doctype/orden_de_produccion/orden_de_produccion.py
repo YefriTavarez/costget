@@ -9,9 +9,29 @@ from frappe.model.document import Document
 from frappe.utils import cint, cstr, flt
 
 class OrdendeProduccion(Document):
+	def onload(self): pass
+		# self.update_colors()
+
+	def before_print(self):
+		self.production_order_print_template = frappe.render_template(
+			"templates/production_order_print_template.html", {
+				"doc": self.as_dict()
+			}
+		)
+
+	def validate(self):
+		self.validate_hard_sheets_qty()
+
 	def autoname(self):
 		array_name = self.project.split("-")
 		self.name = "OP-{}".format(array_name[1])
+
+	def validate_hard_sheets_qty(self):
+		hard_sheets_qty = cint(self.hard_sheets_front_qty) \
+			+ cint(self.hard_sheets_back_qty)
+
+		if hard_sheets_qty != self.hard_sheets_qty:
+			frappe.throw(_("Hard Front plus Back sheets should be equals to Hard Sheets Qty!"))
 
 	def update_project_info(self):
 		from costing.printer import get_printer_pieces_assembled
@@ -40,6 +60,7 @@ class OrdendeProduccion(Document):
 			"material": sku.materials,
 			"material_name": sku.materials_title,
 			"final_dimension": sku.dimension,
+			"packing_dimension": sku.dimension,
 			"proceso_tiro": sku.cantidad_tiro_proceso,
 			"pantone_tiro": sku.cantidad_tiro_pantone,
 			"proceso_retiro": sku.cantidad_proceso_retiro,
@@ -157,6 +178,32 @@ class OrdendeProduccion(Document):
 	def update_opciones_de_textura_2(self, sku):
 		self.set("options_texture_operation_2", sku.opciones_de_textura[1].opciones_de_textura)
 		self.set("options_texture_in_qty_2", flt(self.qty))
+
+	def update_colors(self):
+		for d in self.get_colors():
+			data = frappe._dict(d)
+
+			print(data)
+			# if not data.value: continue
+			self.set(data.fieldname, data.value)
+
+	def get_colors(self):
+		project = frappe.get_doc(self.meta.get_field("project").options, 
+			self.project)
+
+		colors = []
+		for task in project.get_tasks():
+			for fieldname in project.get_color_fieldnames():
+				value = task.get(fieldname)
+
+				if not value: continue
+				
+				colors.append({
+					"fieldname": fieldname,
+					"value": value 
+				})
+
+		return colors
 
 def get_query_production_order_operation(doctype, txt, searchfield, start, page_len, filters):
 	return frappe.db.sql("""

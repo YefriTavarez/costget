@@ -1,0 +1,559 @@
+<style>
+	.print-format .production-order-print-template {
+		text-transform: uppercase;
+	}
+
+	.print-format .production-order-print-template strong {
+		text-transform: capitalize;
+	}
+
+	.print-format .production-order-print-template>table {
+		width: 651px !important;
+	}
+
+	.print-format .production-order-print-template * {
+		font-size: 10px !important;
+	}
+
+	.print-format .production-order-print-template strong {
+		font-size: 9px !important;
+	}
+</style>
+<div class="production-order-print-template">
+	<table>
+		<tbody>
+			<tr>
+				<td colspan="3">
+					<img src="/files/printworks_logo.jpg" style="float: left; width: 110px !important;" />
+				</td>
+				<td colspan="4">
+					<h1 style="
+					text-align: center;
+					margin-top: 50px; 
+					font-size: 1.4em; 
+					font-weight: bold;
+				">
+						ORDEN DE IMPRESIÓN OFFSET
+						<br>
+						<small>{{ doc.name }}</small>
+					</h1>
+				</td>
+				<td colspan="3">
+					<img style="width: 98px !important; top: 0; float: right;"
+						src="https://api.qrserver.com/v1/create-qr-code/?size=98x98&amp;data={{ doc.name }}">
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<!-- Section Break -->
+	<table class="table table-bordered table-condensed">
+		<thead>
+			<tr>
+				<th colspan="6" style="text-align: center; background-color: #a4a5a6;">
+					INFORMACIÓN DEL CLIENTE
+				</th>
+				<td colspan="4" style="background-color: #fbfbfb !important;">
+					<strong style="background-color: #fbfbfb !important;">
+						Inicio
+					</strong>
+					<span style="background-color: #fbfbfb !important;">
+						{{ frappe.format(doc.expected_start_date or doc.creation)[0:10] }}
+					</span>
+				</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td style="background-color: #fbfbfb !important;" colspan="6">
+					<strong>Cliente</strong>
+					<span style="font-size: 8px;">{{ doc.customer }}</span>
+				</td>
+				<td style="background-color: #fbfbfb !important; border: 1px solid #a4a5a6;" colspan="4">
+					<strong style="color: red !important;">
+						Entrega
+					</strong>
+					<span style="color: red !important;">
+						{{ frappe.format(doc.expected_end_date or doc.creation)[0:10] }}
+					</span>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<!-- Section Break -->
+	<table class="table table-bordered table-condensed">
+		<thead>
+			<tr>
+				<th colspan="10" style="text-align: center; background-color: #d1d8dd;">
+					INFORMACIÓN DEL PROYECTO
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td style="background-color: #fbfbfb !important;" colspan="10">
+					<strong>Proy.</strong>
+					<span>{{ doc.project_name }}</span>
+					|
+					<span>{{ "{:,}".format(doc.qty or 1) }}</span>
+					<span>{{ doc.product_type or "" }}</span>
+					|
+					<span>{{ doc.material_name or "" }}</span>
+					|
+					<span>
+						{{ doc.proceso_tiro or 0 }}
+						- {{ doc.pantone_tiro or 0 }}
+						/ {{ doc.proceso_retiro or 0 }}
+						- {{ doc.pantone_retiro or 0 }}
+					</span>
+				</td>
+			</tr>
+			<tr>
+				<td style="background-color: #fbfbfb !important;" colspan="2">
+					<strong>Tamaño Final</strong>
+					{{ doc.final_dimension or "" }}
+				</td>
+				<td style="background-color: #fbfbfb !important;" colspan="2">
+					<strong>Corte Final</strong>
+					{{ doc.options_cutter_operation or "" }}
+				</td>
+			</tr>
+			<tr>
+				<td style="background-color: #fbfbfb !important;" colspan="2">Impresión</td>
+				<td style="background-color: #fbfbfb !important;" colspan="2">Colores</td>
+				<td style="background-color: #fbfbfb !important;" colspan="1">
+					<strong>Pantone</strong>
+					{{ frappe.utils.flt(doc.pantone_tiro) + frappe.utils.flt(doc.pantone_retiro) }}
+				</td>
+				<td style="background-color: #fbfbfb !important;" colspan="1">
+					<strong>Reimpresión</strong>
+					{{ "Si" if doc.reprint else "No" }}
+				</td>
+				<td style="background-color: #fbfbfb !important;" colspan="2">Montaje para Prensa</td>
+				<td style="background-color: #fbfbfb !important;" colspan="2">Máquina</td>
+			</tr>
+			<tr>
+				<td colspan="2">{{ doc.print_setup or "" }}</td>
+				<td colspan="2">{{ "" }}</td>
+				<td colspan="1">{{ "" }}</td>
+				<td colspan="1"></td>
+				<td colspan="2">
+					{{ "{:,}".format(doc.printing_pieces or 1) }}
+				</td>
+				<td colspan="2">{{ doc.printer_station_name or "" }}</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<!-- Section Break -->
+	<table class="table table-bordered table-condensed">
+		<thead>
+			<tr>
+				<th colspan="12" style="text-align: center; background-color: #d1d8dd;">PRE PRODUCCIÓN</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td colspan="3">
+					<strong>Tamaño Prensa</strong>
+				</td>
+				<td colspan="3">
+					<strong>Tipo de Mont.</strong>
+				</td>
+				<td colspan="3">
+					<strong>Uds Montadas</strong>
+				</td>
+				<td colspan="2">
+					<strong>Planchas Tiro</strong>
+				</td>
+				<td colspan="1">{{ doc.hard_sheets_front_qty or 0 }}</td>
+			</tr>
+			<tr>
+				<td colspan="3">{{ doc.printing_dimension or "" }}</td>
+				<td colspan="3">{{ "" }}</td>
+				<td colspan="3">
+					{{ "{:,}".format(doc.mounted_pieces or 1) }}
+				</td>
+				<td colspan="2">
+					<strong>Planchas Retiro</strong>
+				</td>
+				<td colspan="1">
+					{{ "{:,}".format(doc.hard_sheets_back_qty or 1) }}
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<strong>Troquel</strong>
+				</td>
+				<td colspan="3">{{ "" }}</td>
+				<td colspan="3">
+					<strong>Observaciones</strong>
+				</td>
+				<td colspan="3">{{ doc.user_remarks_for_pre or "" }}</td>
+			</tr>
+		</tbody>
+	</table><br>
+
+
+	<!-- Section Break -->
+	<table style="border: none;" class="table">
+		<tr>
+			<td style="width: 50%;">
+				<center>Firma Pre-Producción</center>
+			</td>
+			<td style="border-left: 10px solid white; width: 25%;">
+				<center>Fecha</center>
+			</td>
+			<td style="border-left: 10px solid white; width: 25%;">
+				<center>Hora</center>
+			</td>
+		</tr>
+	</table>
+
+	<!-- Section Break -->
+	<table class="table table-bordered table-condensed">
+		<thead>
+			<tr>
+				<th colspan="10" style="text-align: center; background-color: #d1d8dd;">
+					CORTE Y GUILLOTINA
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td style="background-color: #fbfbfb !important;" colspan="4">PREP. DEL MATERIAL</td>
+				<td style="background-color: #fbfbfb !important;" colspan="1">Material</td>
+				<td colspan="2"><span style="font-size: 85%;">{{ doc.material_name or "" }}</span></td>
+				<td style="background-color: #fbfbfb !important;" colspan="1">Tam</td>
+				<td colspan="2">{{ doc.purchase_material_dimension or "" }}</td>
+			</tr>
+			<tr>
+				<td style="background-color: #fbfbfb !important;" colspan="2">Cant.</td>
+				<td style="background-color: #fbfbfb !important;" colspan="2">Tam. Prensa</td>
+				<td style="background-color: #fbfbfb !important;" colspan="2">Cant. por Pliego</td>
+				<td style="background-color: #fbfbfb !important;" colspan="2">Cant. Cortada</td>
+				<td style="background-color: #fbfbfb !important;" colspan="2">Guillotina</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					{{ "{:,}".format(doc.qty_into_paper_cutter or 1) }}
+				</td>
+				<td colspan="2">{{ doc.printing_dimension or "" }}</td>
+				<td colspan="2">
+					{{ "{:,}".format(doc.printing_pieces or 1) }}
+				</td>
+				<td style="background-color: #fbfbfb !important;" colspan="2">
+					Cant. de Planchas Retiro
+				</td>
+				<td colspan="2">
+					{{ "{:,}".format(doc.hard_sheets_back_qty or 1) }}
+				</td>
+			</tr>
+		</tbody>
+	</table><br>
+
+	<!-- Section Break -->
+	<table style="border: none;" class="table">
+		<tr>
+			<td style="width: 50%;">
+				<center>Firma Entrega</center>
+			</td>
+			<td style="border-left: 10px solid white; width: 50%;">
+				<center>Firma Técnico Guillotina</center>
+			</td>
+		</tr>
+	</table>
+
+	<!-- Section Break -->
+	<table class="table table-bordered table-condensed">
+		<tbody>
+			<tr>
+				<td style="background-color: #fbfbfb !important;" colspan="2">CORTE FINAL</td>
+				<td style="background-color: #fbfbfb !important;" colspan="2">Tam. Corte Final</td>
+				<td colspan="2">
+					<span style="font-size: 85%;">
+						{{ doc.options_cutter_dimension or "- - - - - - - - - -" }}
+					</span>
+				</td>
+				<td style="background-color: #fbfbfb !important;" colspan="2">Cant. a Cortar</td>
+				<td colspan="2">
+					{{ "{:,}".format(doc.options_cutter_in_qty or 1) }}
+				</td>
+			</tr>
+		</tbody>
+	</table><br>
+
+	<!-- Section Break -->
+	<table style="border: none;" class="table">
+		<tr>
+			<td style="width: 50%;">
+				<center>Firma Técnico Guillotina</center>
+			</td>
+			<td style="border-left: 10px solid white; width: 50%;">
+				<center>Firma Enc. Terminación</center>
+			</td>
+		</tr>
+	</table>
+
+
+	<!-- Section Break -->
+	<!-- page-break-before: always; -->
+	<table style="margin: -1px 0px;" class="table table-bordered table-condensed">
+		<thead>
+			<tr>
+				<th colspan="10" style="text-align: center; background-color: #d1d8dd;">PRENSA</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td style="background-color: #fbfbfb !important;" colspan="2">
+					<strong>Cant. a Imprimir</strong>
+				</td>
+				<td colspan="2">
+					{{ "{:,}".format(doc.print_in_qty or 1) }}
+				</td>
+				<td style="background-color: #fbfbfb !important;" colspan="3">
+					<strong>Total Uds Impresas</strong>
+				</td>
+				<td colspan="3">{{ "" }}</td>
+			</tr>
+			<tr>
+				<td style="background-color: #fbfbfb !important;" colspan="2">
+					<strong>Montar plancha</strong>
+				</td>
+				<td style="background-color: #fbfbfb !important;" colspan="2">
+					<strong>Registro y Puesta en</strong>
+				</td>
+				<td style="background-color: #fbfbfb !important;" colspan="2">
+					<strong>Tiempo Tiradas</strong>
+				</td>
+				<td style="background-color: #fbfbfb !important;" colspan="2">
+					<strong>Cant. horas</strong>
+				</td>
+				<td style="background-color: #fbfbfb !important;" colspan="2">
+					<strong>Tiradas</strong>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="1">Inicio</td>
+				<td colspan="1">Fin</td>
+				<td colspan="1">Inicio</td>
+				<td colspan="1">Fin</td>
+				<td colspan="1">Inicio</td>
+				<td colspan="1">Fin</td>
+				<td colspan="2" rowspan="2">{{ "" }}</td>
+				<td colspan="2" rowspan="2">{{ "" }}</td>
+			</tr>
+			<tr>
+				<td colspan="1">{{ "" }}<br></td>
+				<td colspan="1">{{ "" }}<br></td>
+				<td colspan="1">{{ "" }}<br></td>
+				<td colspan="1">{{ "" }}<br></td>
+				<td colspan="1">{{ "" }}<br></td>
+				<td colspan="1">{{ "" }}<br></td>
+			</tr>
+
+		</tbody>
+	</table>
+
+	<!-- Section Break -->
+	<table style="border: none;" class="table">
+		<tr>
+			<td style="width: 50%;">
+				<center>Firma Enc. de Produción</center>
+			</td>
+			<td style="border-left: 10px solid white; width: 50%;">
+				<center>Firma Enc. de Prensa</center>
+			</td>
+		</tr>
+	</table>
+
+	<!-- Terminación -->
+	<table style="border: none;" class="table">
+		<tr>
+			<td style="width: 50%;">
+				<center>Firma Téc. Guillotina</center>
+			</td>
+			<td style="border-left: 10px solid white; width: 50%;">
+				<center>Firma Enc. Terminación</center>
+			</td>
+		</tr>
+	</table>
+
+	<!-- Section Break -->
+	<table class="table table-bordered table-condensed">
+		<thead>
+			<tr>
+				<th colspan="10" style="
+				text-align: center;
+				background-color: #d1d8dd;
+			">
+					TERMINACIÓN
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td style="background-color: #fbfbfb !important;" colspan="2">
+					<strong>A Entregar</strong>
+					{{ "{:,}".format(doc.options_packing_in_qty or 1) }}
+				</td>
+				<td style="background-color: #fbfbfb !important;" colspan="8">
+					<table style="width: 100% !important;">
+						<tbody>
+							<tr>
+								<td style="background-color: #fbfbfb !important;">
+									<strong>
+										Cant. de Paquetes
+									</strong>
+								</td>
+								<td>
+									<span style="color: white !important;">
+										{{ "_________________" }}
+									</span>
+								</td>
+								<td style="background-color: #fbfbfb !important;">
+									<strong>
+										Paquetes de
+									</strong>
+								</td>
+								<td>
+									<span style="color: white !important;">
+										{{ "_________________" }}
+									</span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<strong>Pegar</strong>
+				</td>
+				<td colspan="2">
+					<strong>Copaginar</strong>
+				</td>
+				<td>
+					<strong>Emblocar</strong>
+				</td>
+				<td colspan="2">
+					<strong>Grapar</strong>
+				</td>
+				<td>
+					<strong>Laminar</strong>
+				</td>
+				<td colspan="2">
+					<strong style="color: white;">Otro</strong>
+				</td>
+			</tr>
+			<tr>
+				<td>{{ "" }}<br></td>
+				<td colspan="2">{{ "" }}<br></td>
+				<td>{{ "" }}<br></td>
+				<td colspan="2">{{ "" }}<br></td>
+				<td>{{ "" }}<br></td>
+				<td colspan="2">{{ "" }}<br></td>
+			</tr>
+
+			<tr>
+				<td>
+					<strong>Doblar</strong>
+				</td>
+				<td colspan="2">
+					<strong>Tape Doble Cara</strong>
+				</td>
+				<td>
+					<strong>Perforar</strong>
+				</td>
+				<td colspan="2">
+					<strong>Tiro Seco</strong>
+				</td>
+				<td>
+					<strong>Troquelar</strong>
+				</td>
+				<td colspan="2">
+					<strong style="color: white;">Otro</strong>
+				</td>
+			</tr>
+			<tr>
+				<td>{{ "" }}<br></td>
+				<td colspan="2">{{ "" }}<br></td>
+				<td>{{ "" }}<br></td>
+				<td colspan="2">{{ "" }}<br></td>
+				<td>{{ "" }}<br></td>
+				<td colspan="2">{{ "" }}<br></td>
+			</tr>
+
+		</tbody>
+	</table><br>
+
+	<!-- Section Break -->
+
+	<table style="border: none;" class="table">
+		<tr>
+			<td style="width: 50%;">
+				<center>Firma Enc. de Terminación</center>
+			</td>
+			<td style="border-top: 0px solid white; width: 50%;">
+			</td>
+		</tr>
+	</table>
+
+	<!-- Almacén -->
+	<table class="table table-bordered table-condensed">
+		<thead>
+			<tr>
+				<th colspan="10" style="
+					text-align: center;
+					background-color: #d1d8dd;
+				">
+					ALMACÉN
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td colspan="1">
+					<strong>Entrega Parcial 1</strong>
+				</td>
+				<td style="background-color: white !important;" colspan="2">
+					<span style="color: white !important;">
+
+						{{ "____________________" }}
+					</span>
+				</td>
+				<td colspan="1">
+					<strong>Entrega Parcial 2</strong>
+				</td>
+				<td style="background-color: white !important;" colspan="2">
+					<span style="color: white !important;">
+
+						{{ "____________________" }}
+					</span>
+				</td>
+				<td colspan="1">
+					<strong>Entrega Total</strong>
+				</td>
+				<td style="background-color: white !important;" colspan="2">
+					<span style="color: white !important;">
+
+						{{ "____________________" }}
+					</span>
+				</td>
+			</tr>
+		</tbody>
+
+	</table>
+
+	<table style="border: none;" class="table">
+		<tr>
+			<td style="width: 50%;">
+				<center>Firma Logística</center>
+			</td>
+			<td style="border-top: 0px solid white; width: 50%;">
+			</td>
+		</tr>
+	</table>
+</div>

@@ -116,8 +116,8 @@ app_include_js = "/assets/costing/js/costing.js"
 # Overriding Whitelisted Methods
 # ------------------------------
 #
-# override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "costing.event.get_events"
-# }
+override_whitelisted_methods = {
+	"frappe.utils.print_format.download_pdf": "costing.controllers.printview.download_pdf",
+}
 
 boot_session = "costing.boot.get_boot_info"
